@@ -3,24 +3,25 @@
 <script type="text/javascript" src="game.js"></script>
 <script type="text/javascript">
 window.onload = function(){
-	let game = new Game(2);
+	let game = new Game();
+	let is_jumping = false;
 	function gameLoop(){
-		game.update();
+		game.update(is_jumping);
 	}
 	
 	setInterval(gameLoop, 50);
 	
 	this.addEventListener('keydown', function(e){
 		if (e.key == " "){
-			game.start_jump();
+			is_jumping = true;
 		}
  	});
 	this.addEventListener('keyup', function(e){
 		if (e.key == " "){
-			game.end_jump();
+			is_jumping = false;
 		}
 		else if(e.key == "r"){
-			game = new Game(2);
+			game = new Game();
 		}
 	});
 }

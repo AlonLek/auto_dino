@@ -2,51 +2,38 @@
 class Dino{
 	constructor(){
 		this.h = 0;
-		this.el = buildDino();
+		this.v = 0;
+
 		this.max_height = 200;
 		this.time_to_apex = 0.4 * 1000 / 50;
 		this.min_gravity = (2 * this.max_height / (this.time_to_apex*this.time_to_apex))
 		this.jump_velocity = this.time_to_apex * this.min_gravity
 		
-		this.acceleration = 0;
-		this.v = 0;
-		this.jumping = false;
-		this.update_el();
+		this.boundary = 48;
+
+		this.el = buildDino();
+		this.render();
 		const gameEl = document.getElementById('game');
 		gameEl.appendChild(this.el);
-		this.boundary = this.el.offsetWidth;
+		console.log(this.boundary);
 	}
-
-	start_jump(){
-		if (this.jumping)
-			return;
-		this.jumping = true;
-		this.acceleration = -this.min_gravity;
-		if (this.h < 5)
+	
+	update(is_jumping){
+		acceleration = is_jumping ? -this.min_gravity : -2 * this.min_gravity;
+		if (is_jumping && this.h < 5)
 			this.v = this.jump_velocity;
-	}
-	
-	end_jump(){
-		this.acceleration = -2*this.min_gravity;
-		this.jumping = false;
-	}
-	
-	update(){
+
 		this.v += this.acceleration
 
-		if (this.v <= -this.fall_vel){
-			this.v = -this.fall_vel;
-		}
 		this.h += this.v;
 		if (this.h <= 0){
 			this.h = 0;
 		}
 
-		this.update_el();
+		this.render();
 	}
 	
-	update_el(){
-		console.log(this.h);
+	render(){
 		this.el.style.bottom = this.h;
 		this.el.style.left = 0;
 	}
@@ -79,23 +66,23 @@ class Cactus{
 }
 
 class Game{
-	constructor(maxCactus){
+	constructor(){
 		const gameEl = document.getElementById('game');
 		gameEl.innerHTML = '';
 
-		this.maxCactus = maxCactus;
+		this.maxCactus = 2;
 		this.dino = new Dino();
 		this.currentCactii = new Set();
-		for(let i=0;i<maxCactus;i++){
+		for(let i=0;i<this.maxCactus;i++){
 			let cactus = new Cactus(Math.round(300 + Math.random()*900));
 			this.currentCactii.add(cactus);
 		}
 		this.dead = false;
 	}
 	
-	update(){
+	update(is_jumping){
 		if (this.dead) return;
-		this.dino.update();
+		this.dino.update(is_jumping);
 		for (let cact of this.currentCactii){
 			cact.update();
 			if (cact.x <= 0){
@@ -113,6 +100,10 @@ class Game{
 		}
 	}
 	
+	render(){
+		
+	}
+	
 	end(){
 		this.dead = true;
 		const gameEl = document.getElementById('game');
@@ -120,13 +111,5 @@ class Game{
 		message.classList.add('message');
 		message.appendChild(buildFromText('GAME OVER\nPress R to restart', 'p'));
 		gameEl.appendChild(message);
-	}
-	
-	start_jump(){
-		this.dino.start_jump();
-	}
-
-	end_jump(){
-		this.dino.end_jump();
 	}
 }
