@@ -24,6 +24,7 @@ class Dino{
 		this.h += this.v;
 		if (this.h <= 0){
 			this.h = 0;
+			this.v = 0;
 		}
 
 		this.render();
@@ -73,11 +74,14 @@ class Cactus{
 class Game{
 	constructor(){
 		this.maxCactus = 2;
+		this.cactusMaxPos = 1000;
+		this.cactusMinPos = 300;
+		
 		this.dino = new Dino();
 		this.score = 0;
 		this.currentCactii = new Set();
 		for(let i=0;i<this.maxCactus;i++){
-			let cactus = new Cactus(Math.round(300 + Math.random()*900));
+			let cactus = new Cactus(Math.round(this.cactusMinPos + Math.random()*(this.cactusMaxPos - this.cactusMinPos)));
 			this.currentCactii.add(cactus);
 		}
 		this.dead = false;
@@ -101,13 +105,28 @@ class Game{
 			}
 		}
 		if (this.currentCactii.size < this.maxCactus && Math.random() < 0.05){
-			let cactus = new Cactus(1000);
+			let cactus = new Cactus(this.cactusMaxPos);
 			this.currentCactii.add(cactus);
 		}
 	}
 	
+	getState(){
+		let self = this;
+		let dinoState = [this.dead ? 1 : 0, this.dino.h / this.dino.maxHeight, this.dino.v / this.dino.jumpVelocity];
+		let cactusPositions = Array.from(this.currentCactii).map(function(c){ return c.x / self.cactusMaxPos });
+		cactusPositions = cactusPositions.sort();
+		while(cactusPositions.length < this.maxCactus){
+			cactusPositions.push(1);
+		}
+		return dinoState.concat(cactusPositions)
+	}
+	
 	getScore(){
 		return this.score;
+	}
+	
+	getReward(){
+		return this.dead ? 0 : this.score;
 	}
 	
 	startRendering(){

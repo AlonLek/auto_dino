@@ -9,6 +9,7 @@ window.onload = function(){
 	function gameLoop(){
 		game.update(isJumping);
 		game.render();
+		console.log(game.getState());
 	}
 	
 	setInterval(gameLoop, 50);
