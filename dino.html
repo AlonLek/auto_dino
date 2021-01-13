@@ -4,9 +4,11 @@
 <script type="text/javascript">
 window.onload = function(){
 	let game = new Game();
+	game.start_rendering();
 	let is_jumping = false;
 	function gameLoop(){
 		game.update(is_jumping);
+		game.render();
 	}
 	
 	setInterval(gameLoop, 50);
@@ -22,6 +24,7 @@ window.onload = function(){
 		}
 		else if(e.key == "r"){
 			game = new Game();
+			game.start_rendering();
 		}
 	});
 }
@@ -46,6 +49,12 @@ window.onload = function(){
 	align-self: center;
 	text-align: center;
 	font-size: 3em;
+	font-family: 'Consolas';
+}
+#game > .score{
+	text-align: left;
+	align-self: flex-start;
+	font-size: 2em;
 	font-family: 'Consolas';
 }
 </style>

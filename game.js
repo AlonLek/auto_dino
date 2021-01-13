@@ -30,7 +30,7 @@ class Dino{
 	}
 	
 	render(){
-		if (this.el == null){
+		if (this.el === null){
 			 this.el = buildDino();
 			const gameEl = document.getElementById('game');
 			gameEl.appendChild(this.el);
@@ -45,19 +45,21 @@ class Cactus{
 	constructor(x){
 		this.x = x;
 
-		this.el = buildCactus();
-		this.update_el();
-		const gameEl = document.getElementById('game');
-		gameEl.appendChild(this.el);
-		this.height = this.el.offsetHeight;
+		this.height = 62;
+		this.el = null;
 	}
 	
 	update(){
 		this.x -= 20;
-		this.update_el();
+		this.render();
 	}
 	
-	update_el(){
+	render(){
+		if (this.el === null){
+			this.el = buildCactus();
+			const gameEl = document.getElementById('game');
+			gameEl.appendChild(this.el);
+		}
 		this.el.style.left = this.x;
 		this.el.style.bottom = 0;
 	}
@@ -70,9 +72,6 @@ class Cactus{
 
 class Game{
 	constructor(){
-		const gameEl = document.getElementById('game');
-		gameEl.innerHTML = '';
-
 		this.maxCactus = 2;
 		this.dino = new Dino();
 		this.currentCactii = new Set();
@@ -81,6 +80,8 @@ class Game{
 			this.currentCactii.add(cactus);
 		}
 		this.dead = false;
+		
+		this.gameOverMessage = null;
 	}
 	
 	update(is_jumping){
@@ -93,8 +94,7 @@ class Game{
 				this.currentCactii.delete(cact);
 			}
 			if(cact.x <= this.dino.boundary && this.dino.h < cact.height){
-				console.log('dead');
-				this.end();
+				this.dead = true;
 			}
 		}
 		if (this.currentCactii.size < this.maxCactus && Math.random() < 0.05){
@@ -103,16 +103,22 @@ class Game{
 		}
 	}
 	
-	render(){
-		
+	start_rendering(){
+		const gameEl = document.getElementById('game');
+		gameEl.innerHTML = '';
 	}
 	
-	end(){
-		this.dead = true;
-		const gameEl = document.getElementById('game');
-		let message = document.createElement('div');
-		message.classList.add('message');
-		message.appendChild(buildFromText('GAME OVER\nPress R to restart', 'p'));
-		gameEl.appendChild(message);
+	render(){
+		this.dino.render();
+		for (let cact of this.currentCactii){
+			cact.render();
+		}
+		if (this.dead && this.gameOverMessage == null){
+			const gameEl = document.getElementById('game');
+			let message = document.createElement('div');
+			message.classList.add('message');
+			message.appendChild(buildFromText('GAME OVER\nPress R to restart', 'p'));
+			gameEl.appendChild(message);
+		}
 	}
 }
