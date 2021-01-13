@@ -1,0 +1,53 @@
+<html>
+<script type="text/javascript" src="ui.js"></script>
+<script type="text/javascript" src="game.js"></script>
+<script type="text/javascript">
+window.onload = function(){
+	let game = new Game(2);
+	function gameLoop(){
+		game.update();
+	}
+	
+	setInterval(gameLoop, 50);
+	
+	this.addEventListener('keydown', function(e){
+		if (e.key == " "){
+			game.start_jump();
+		}
+ 	});
+	this.addEventListener('keyup', function(e){
+		if (e.key == " "){
+			game.end_jump();
+		}
+		else if(e.key == "r"){
+			game = new Game(2);
+		}
+	});
+}
+
+</script>
+<style>
+#game{
+	width: 1000px; 
+	height: 600px;
+	border: 1px solid red;
+	display: flex;
+	position: relative;
+	overflow: hidden;
+	justify-content: center;
+}
+#game > *{
+	display: inline-block;
+	align-self: flex-end;
+	position: absolute;
+}
+#game > .message{
+	align-self: center;
+	text-align: center;
+	font-size: 3em;
+	font-family: 'Consolas';
+}
+</style>
+<div id="game">
+</div>
+</html>
