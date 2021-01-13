@@ -4,10 +4,10 @@
 <script type="text/javascript">
 window.onload = function(){
 	let game = new Game();
-	game.start_rendering();
-	let is_jumping = false;
+	game.startRendering();
+	let isJumping = false;
 	function gameLoop(){
-		game.update(is_jumping);
+		game.update(isJumping);
 		game.render();
 	}
 	
@@ -15,16 +15,16 @@ window.onload = function(){
 	
 	this.addEventListener('keydown', function(e){
 		if (e.key == " "){
-			is_jumping = true;
+			isJumping = true;
 		}
  	});
 	this.addEventListener('keyup', function(e){
 		if (e.key == " "){
-			is_jumping = false;
+			isJumping = false;
 		}
 		else if(e.key == "r"){
 			game = new Game();
-			game.start_rendering();
+			game.startRendering();
 		}
 	});
 }
@@ -52,7 +52,6 @@ window.onload = function(){
 	font-family: 'Consolas';
 }
 #game > .score{
-	text-align: left;
 	align-self: flex-start;
 	font-size: 2em;
 	font-family: 'Consolas';
