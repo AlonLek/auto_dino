@@ -11,19 +11,15 @@ class Dino{
 		
 		this.boundary = 48;
 
-		this.el = buildDino();
-		this.render();
-		const gameEl = document.getElementById('game');
-		gameEl.appendChild(this.el);
-		console.log(this.boundary);
+		this.el = null;
 	}
 	
 	update(is_jumping){
-		acceleration = is_jumping ? -this.min_gravity : -2 * this.min_gravity;
+		const acceleration = is_jumping ? -this.min_gravity : -2 * this.min_gravity;
 		if (is_jumping && this.h < 5)
 			this.v = this.jump_velocity;
 
-		this.v += this.acceleration
+		this.v += acceleration;
 
 		this.h += this.v;
 		if (this.h <= 0){
@@ -34,6 +30,12 @@ class Dino{
 	}
 	
 	render(){
+		if (this.el == null){
+			 this.el = buildDino();
+			const gameEl = document.getElementById('game');
+			gameEl.appendChild(this.el);
+		}
+		
 		this.el.style.bottom = this.h;
 		this.el.style.left = 0;
 	}
@@ -42,6 +44,7 @@ class Dino{
 class Cactus{
 	constructor(x){
 		this.x = x;
+
 		this.el = buildCactus();
 		this.update_el();
 		const gameEl = document.getElementById('game');
