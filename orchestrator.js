@@ -7,7 +7,8 @@ class Orchestrator {
     run(mode, isJumping) {
         if (mode === 'auto') {
             let isJumping = true;
-            console.log(this.game.getState());
+            state = this.game.getState();
+            reward = this.game.getReward();
 
             this.game.update(isJumping);
             this.game.render();
