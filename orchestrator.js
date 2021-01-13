@@ -4,15 +4,19 @@ class Orchestrator {
     }
 
 
-    run() {
-        let is_jumping = true;
-        console.log(this.game);
-        if (this.game.jump_velocity > 0){
+    run(mode, isJumping) {
+        if (mode === 'auto') {
+            let isJumping = true;
+            console.log(this.game);
 
-            is_jumping = false;
+            this.game.update(isJumping);
+            this.game.render();
         }
 
-        this.game.update(is_jumping);
+        if (mode === 'manual') {
+            this.game.update(isJumping);
+            this.game.render();
+        }
 
     }
 
