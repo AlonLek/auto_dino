@@ -4,24 +4,27 @@
 <script type="text/javascript">
 window.onload = function(){
 	let game = new Game();
-	let is_jumping = false;
+	game.startRendering();
+	let isJumping = false;
 	function gameLoop(){
-		game.update(is_jumping);
+		game.update(isJumping);
+		game.render();
 	}
 	
 	setInterval(gameLoop, 50);
 	
 	this.addEventListener('keydown', function(e){
 		if (e.key == " "){
-			is_jumping = true;
+			isJumping = true;
 		}
  	});
 	this.addEventListener('keyup', function(e){
 		if (e.key == " "){
-			is_jumping = false;
+			isJumping = false;
 		}
 		else if(e.key == "r"){
 			game = new Game();
+			game.startRendering();
 		}
 	});
 }
@@ -46,6 +49,11 @@ window.onload = function(){
 	align-self: center;
 	text-align: center;
 	font-size: 3em;
+	font-family: 'Consolas';
+}
+#game > .score{
+	align-self: flex-start;
+	font-size: 2em;
 	font-family: 'Consolas';
 }
 </style>

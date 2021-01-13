@@ -4,33 +4,34 @@ class Dino{
 		this.h = 0;
 		this.v = 0;
 
-		this.max_height = 200;
-		this.time_to_apex = 0.4 * 1000 / 50;
-		this.min_gravity = (2 * this.max_height / (this.time_to_apex*this.time_to_apex))
-		this.jump_velocity = this.time_to_apex * this.min_gravity
+		this.maxHeight = 200;
+		this.timeToApex = 0.4 * 1000 / 50;
+		this.minGravity = (2 * this.maxHeight / (this.timeToApex*this.timeToApex))
+		this.jumpVelocity = this.timeToApex * this.minGravity
 		
 		this.boundary = 48;
 
 		this.el = null;
 	}
 	
-	update(is_jumping){
-		const acceleration = is_jumping ? -this.min_gravity : -2 * this.min_gravity;
-		if (is_jumping && this.h < 5)
-			this.v = this.jump_velocity;
+	update(isJumping){
+		const acceleration = isJumping ? -this.minGravity : -2 * this.minGravity;
+		if (isJumping && this.h < 5)
+			this.v = this.jumpVelocity;
 
 		this.v += acceleration;
 
 		this.h += this.v;
 		if (this.h <= 0){
 			this.h = 0;
+			this.v = 0;
 		}
 
 		this.render();
 	}
 	
 	render(){
-		if (this.el == null){
+		if (this.el === null){
 			 this.el = buildDino();
 			const gameEl = document.getElementById('game');
 			gameEl.appendChild(this.el);
@@ -45,19 +46,21 @@ class Cactus{
 	constructor(x){
 		this.x = x;
 
-		this.el = buildCactus();
-		this.update_el();
-		const gameEl = document.getElementById('game');
-		gameEl.appendChild(this.el);
-		this.height = this.el.offsetHeight;
+		this.height = 62;
+		this.el = null;
 	}
 	
 	update(){
 		this.x -= 20;
-		this.update_el();
+		this.render();
 	}
 	
-	update_el(){
+	render(){
+		if (this.el === null){
+			this.el = buildCactus();
+			const gameEl = document.getElementById('game');
+			gameEl.appendChild(this.el);
+		}
 		this.el.style.left = this.x;
 		this.el.style.bottom = 0;
 	}
@@ -70,49 +73,87 @@ class Cactus{
 
 class Game{
 	constructor(){
-		const gameEl = document.getElementById('game');
-		gameEl.innerHTML = '';
-
 		this.maxCactus = 2;
+		this.cactusMaxPos = 1000;
+		this.cactusMinPos = 300;
+		
 		this.dino = new Dino();
+		this.score = 0;
 		this.currentCactii = new Set();
 		for(let i=0;i<this.maxCactus;i++){
-			let cactus = new Cactus(Math.round(300 + Math.random()*900));
+			let cactus = new Cactus(Math.round(this.cactusMinPos + Math.random()*(this.cactusMaxPos - this.cactusMinPos)));
 			this.currentCactii.add(cactus);
 		}
 		this.dead = false;
+		
+		this.gameOverMessage = null;
+		this.scoreMessage = null;
 	}
-	
-	update(is_jumping){
+
+	update(isJumping){
 		if (this.dead) return;
-		this.dino.update(is_jumping);
+		this.dino.update(isJumping);
 		for (let cact of this.currentCactii){
 			cact.update();
 			if (cact.x <= 0){
 				cact.destroy();
 				this.currentCactii.delete(cact);
+				this.score++;
 			}
 			if(cact.x <= this.dino.boundary && this.dino.h < cact.height){
-				console.log('dead');
-				this.end();
+				this.dead = true;
 			}
 		}
 		if (this.currentCactii.size < this.maxCactus && Math.random() < 0.05){
-			let cactus = new Cactus(1000);
+			let cactus = new Cactus(this.cactusMaxPos);
 			this.currentCactii.add(cactus);
 		}
 	}
 	
-	render(){
-		
+	getState(){
+		let self = this;
+		let dinoState = [this.dead ? 1 : 0, this.dino.h / this.dino.maxHeight, this.dino.v / this.dino.jumpVelocity];
+		let cactusPositions = Array.from(this.currentCactii).map(function(c){ return c.x / self.cactusMaxPos });
+		cactusPositions = cactusPositions.sort();
+		while(cactusPositions.length < this.maxCactus){
+			cactusPositions.push(1);
+		}
+		return dinoState.concat(cactusPositions)
 	}
 	
-	end(){
-		this.dead = true;
+	getScore(){
+		return this.score;
+	}
+	
+	getReward(){
+		return this.dead ? 0 : this.score;
+	}
+	
+	startRendering(){
 		const gameEl = document.getElementById('game');
-		let message = document.createElement('div');
-		message.classList.add('message');
-		message.appendChild(buildFromText('GAME OVER\nPress R to restart', 'p'));
-		gameEl.appendChild(message);
+		gameEl.innerHTML = '';
+	}
+	
+	render(){
+		this.dino.render();
+		for (let cact of this.currentCactii){
+			cact.render();
+		}
+		if (this.scoreMessage === null){
+			const gameEl = document.getElementById('game');
+			this.scoreMessage = document.createElement('div');
+			this.scoreMessage.classList.add('score');
+			gameEl.appendChild(this.scoreMessage);
+		}
+
+		this.scoreMessage.innerText = 'Score: ' + this.getScore();
+		
+		if (this.dead && this.gameOverMessage === null){
+			const gameEl = document.getElementById('game');
+			this.gameOverMessage = document.createElement('div');
+			this.gameOverMessage.classList.add('message');
+			this.gameOverMessage.appendChild(buildFromText('GAME OVER\nPress R to restart', 'p'));
+			gameEl.appendChild(this.gameOverMessage);
+		}
 	}
 }
